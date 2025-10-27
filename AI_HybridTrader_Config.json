@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "ea_id": "AI_HybridTrader_pro",
+    "version": "3.0",
+    "supported_platforms": ["MT4", "MT5"],
+    "author": "Aime Fintech"
+  },
+  "broker": {
+    "name": "Orbex",
+    "server_mt4": "Orbex-Demo-MT4",
+    "server_mt5": "Orbex-Demo-MT5",
+    "login": "YOUR_LOGIN",
+    "password": "YOUR_PASSWORD"
+  },
+  "symbols": ["EURUSD", "XAUUSD", "US30"],
+  "timeframes": {
+    "primary": "M15",
+    "confirmation": "H1"
+  },
+  "indicators": {
+    "ma_fast": {
+      "period": 21,
+      "method": "EMA"
+    },
+    "ma_slow": {
+      "period": 55,
+      "method": "SMA"
+    },
+    "rsi": {
+      "period": 14,
+      "buy": 35,
+      "sell": 65
+    }
+  },
+  "ml_filter": {
+    "model": "LSTM",
+    "window": 60,
+    "horizon": 4,
+    "min_confidence": 0.60,
+    "online_retrain_hours": 6,
+    "features": ["price", "volume", "atr_14", "macd_12_26_9"]
+  },
+  "trade_rules": {
+    "entry_long": "MA_fast>MA_slow && RSI<buy && ML>=min_confidence",
+    "entry_short": "MA_fast<MA_slow && RSI>sell && ML>=min_confidence",
+    "exit": {
+      "hard_tp_sl": true,
+      "tp_pips": 60,
+      "sl_pips": 30,
+      "trailing": {
+        "enable": true,
+        "atr_mult": 2.5
+      },
+      "time_stop_bars": 80
+    }
+  },
+  "risk": {
+    "risk_per_trade_pct": 1.0,
+    "max_open_trades": 5,
+    "max_daily_dd_pct": 4.0,
+    "lockout_minutes": 120
+  },
+  "optimizer": {
+    "enable": true,
+    "method": "bayesian",
+    "iterations": 120,
+    "target": "expectancy",
+    "ranges": {
+      "ma_fast": [10, 30],
+      "ma_slow": [40, 80],
+      "rsi.buy": [25, 45],
+      "rsi.sell": [55, 75]
+    }
+  },
+  "backtest": {
+    "start": "2024-01-01",
+    "end": "2025-10-01",
+    "initial_balance": 10000,
+    "slippage": 1.2,
+    "commission_per_lot": 7.0,
+    "spread": "variable",
+    "report": ["net_profit", "max_dd", "sharpe", "win_rate"]
+  },
+  "logging": {
+    "level": "INFO",
+    "log_file": "AI_HybridTrader.log",
+    "journal_csv": "AI_HybridTrader_trades.csv"
+  }
+}
